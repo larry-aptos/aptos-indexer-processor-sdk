@@ -41,7 +41,7 @@ jobs:
         run: |
           branch_name="${{ github.event.client_payload.branch_name }}-update-aptos-protos"
           gh pr create --title "Update aptos-protos to upstream branch ${{ github.event.client_payload.branch_name }}" \
-                       --body "This PR updates aptos-protos" \
+                       --body "This PR updates aptos-protos to new version." \
                        --base main \
                        --head "$branch_name"
         env:

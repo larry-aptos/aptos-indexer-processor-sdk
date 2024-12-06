@@ -1,0 +1,35 @@
+name: Update Processor SDK Version
+'on':
+  push:
+    branches:
+      - main
+    paths:
+      # Be conservative and only run this workflow when the Cargo.toml file changes.
+      - aptos-indexer-processors-sdk/Cargo.toml
+  pull_request:
+    branches:
+      - main
+    paths:
+      # Be conservative and only run this workflow when the Cargo.toml file changes.
+      - aptos-indexer-processors-sdk/Cargo.toml
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Capture the commit hash
+        id: commit_hash
+        run: |
+          # Echo the commit hash to the output
+          echo "::set-output name=commit_hash::$(echo $GITHUB_SHA)"
+          # Echo the PR branch name to the output
+          echo "::set-output name=branch_name::$(echo $GITHUB_REF | sed 's/refs\/heads\///')"
+      - name: Dispatch Event to processors Repo
+        uses: peter-evans/repository-dispatch@v3.0.0
+        with:
+          token: ${{ secrets.CI_TOKEN }}
+          repository: 'larry-aptos/aptos-indexer-processor'
+          event-type: 'sdk-dependency-update'
+          client-payload: '{"commit_hash": "${{ github.sha }}", "branch_name": "${{ steps.commit_hash.outputs.branch_name }}"}'
