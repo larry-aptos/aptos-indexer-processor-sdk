@@ -43,7 +43,7 @@ jobs:
           git checkout -b ${{ github.event.client_payload.branch_name }}-update-aptos-protos
           git add Cargo.toml
           git commit -m "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}"
-          git push --force
+          git push origin "$(git_current_branch)" --force
         env:
           GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
         working-directory: aptos-indexer-processors-sdk/
