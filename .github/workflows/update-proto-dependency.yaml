@@ -30,11 +30,11 @@ jobs:
           git config --global credential.helper store
           echo "https://larry-aptos:${{ secrets.CI_TOKEN}}@github.com" > ~/.git-credentials
           
-          toml set Cargo.toml workspace.dependencies.aptos-protos.rev ${{ github.event.inputs.commit_hash }} > Cargo.tmp && mv Cargo.tmp Cargo.toml
+          toml set Cargo.toml workspace.dependencies.aptos-protos.rev ${{ github.event.client_payload.commit_hash }} > Cargo.tmp && mv Cargo.tmp Cargo.toml
 
           git add Cargo.toml
-          git commit -m "Update aptos-protos to ${{ github.event.inputs.commit_hash }}"
+          git commit -m "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}"
           gh auth login --with-token ${{ secrets.CI_TOKEN }}
-          git push origin ${{ github.event.inputs.branch_name }}-update-dependency
-          gh pr create --title "Update aptos-protos to ${{ github.event.inputs.commit_hash }}" --body "Update aptos-protos to ${{ github.event.inputs.commit_hash }}" --base main --head ${{ github.event.inputs.branch_name }}-update-dependency
+          git push origin ${{ github.event.client_payload.branch_name }}-update-dependency
+          gh pr create --title "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}" --body "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}" --base main --head ${{ github.event.inputs.branch_name }}-update-dependency
         working-directory: aptos-indexer-processors-sdk/
