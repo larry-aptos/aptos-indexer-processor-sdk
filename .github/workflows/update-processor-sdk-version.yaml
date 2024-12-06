@@ -26,10 +26,20 @@ jobs:
           echo "::set-output name=commit_hash::$(echo $GITHUB_SHA)"
           # Echo the PR branch name to the output
           echo "::set-output name=branch_name::${{ github.head_ref }}"
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install toml
+        run: cargo install toml-cli
+      - name: Capture aptos-protos commit hash
+        id: aptos_protos_commit_hash
+        run: |
+          cd aptos-indexer-processors-sdk
+          aptos_protos_commit_hash=$(toml get Cargo.toml workspace.dependencies.aptos-protos.rev)
+          echo "::set-output name=aptos_protos_commit_hash::${aptos_protos_commit_hash}"
       - name: Dispatch Event to processors Repo
         uses: peter-evans/repository-dispatch@v3.0.0
         with:
           token: ${{ secrets.CI_TOKEN }}
           repository: 'larry-aptos/aptos-indexer-processors'
           event-type: 'sdk-dependency-update'
-          client-payload: '{"commit_hash": "${{ github.sha }}", "branch_name": "${{ steps.commit_hash.outputs.branch_name }}"}'
+          client-payload: '{"commit_hash": "${{ github.sha }}", "branch_name": "${{ steps.commit_hash.outputs.branch_name }}", "aptos_protos_commit_hash": "${{ steps.aptos_protos_commit_hash.outputs.aptos_protos_commit_hash }}"}'
