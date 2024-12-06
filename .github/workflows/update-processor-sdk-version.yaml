@@ -5,13 +5,13 @@ name: Update Processor SDK Version
       - main
     paths:
       # Be conservative and only run this workflow when the Cargo.toml file changes.
-      - aptos-indexer-processors-sdk/Cargo.toml
+      - aptos-indexer-processor-sdk/Cargo.toml
   pull_request:
     branches:
       - main
     paths:
       # Be conservative and only run this workflow when the Cargo.toml file changes.
-      - aptos-indexer-processors-sdk/Cargo.toml
+      - aptos-indexer-processor-sdk/Cargo.toml
 
 jobs:
   run-tests:
