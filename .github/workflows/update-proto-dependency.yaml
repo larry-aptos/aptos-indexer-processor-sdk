@@ -52,7 +52,7 @@ jobs:
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.CI_TOKEN }}
           commit-message: "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}"
           branch: ${{ github.event.client_payload.branch_name }}-update-aptos-protos
           title: "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}"
