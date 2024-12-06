@@ -37,7 +37,20 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
         working-directory: aptos-indexer-processors-sdk/
+      - name: Check if PR Already Exists
+        id: check_pr
+        run: |
+          branch_name="${{ github.event.client_payload.branch_name }}-update-aptos-protos"
+          existing_pr=$(gh pr list --base main --head "$branch_name" --json number --jq '.[].number')
+          if [ -n "$existing_pr" ]; then
+            echo "::set-output name=if_pr_exists::true"
+          else
+            echo "::set-output name=if_pr_exists::false"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Pull Request
+        if: steps.check_pr.outputs.if_pr_exists == 'false'
         run: |
           branch_name="${{ github.event.client_payload.branch_name }}-update-aptos-protos"
           gh pr create --title "Update aptos-protos to upstream branch ${{ github.event.client_payload.branch_name }}" \
