@@ -42,4 +42,4 @@ jobs:
           token: ${{ secrets.CI_TOKEN }}
           repository: 'larry-aptos/aptos-indexer-processors'
           event-type: 'sdk-dependency-update'
-          client-payload: '{"commit_hash": "${{ github.sha }}", "branch_name": "${{ steps.commit_hash.outputs.branch_name }}", "aptos_protos_commit_hash": "${{ steps.aptos_protos_commit_hash.outputs.aptos_protos_commit_hash }}"}'
+          client-payload: '{"commit_hash": "${{ github.sha }}", "branch_name": "${{ steps.commit_hash.outputs.branch_name }}", "aptos_protos_commit_hash": ${{ steps.aptos_protos_commit_hash.outputs.aptos_protos_commit_hash }}}'
