@@ -39,11 +39,12 @@ jobs:
     
       - name: Commit and Push Changes
         run: |
-          set -e
-          git checkout -b ${{ github.event.client_payload.branch_name }}-update-aptos-protos
-          git add Cargo.toml
-          git commit -m "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}"
-          git push origin "$(git_current_branch)" --force
+           set -e
+           branch_name="${{ github.event.client_payload.branch_name }}-update-aptos-protos"
+           git checkout -b "$branch_name"
+           git add Cargo.toml
+           git commit -m "Update aptos-protos to ${{ github.event.client_payload.commit_hash }}"
+           git push origin "$branch_name" --force
         env:
           GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
         working-directory: aptos-indexer-processors-sdk/
