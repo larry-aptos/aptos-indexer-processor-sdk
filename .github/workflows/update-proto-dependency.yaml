@@ -15,9 +15,28 @@ on:
   repository_dispatch:
     types: [proto-dependency-update]
 jobs:
-  echo-inputs:
+  update-the-dependency:
     runs-on: ubuntu-latest
     steps:
-      - name: Echo branch name
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch_name }}-update-dependency
+      - name: Setup Rust
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - name: Install toml
+        run: cargo install toml-cli
+      - name: Update the dependency
         run: |
-          echo "Commit hash: ${{ github.event.client_payload.commit_hash }}"
+          set -e
+          git config --global credential.helper store
+          echo "https://larry-aptos:${{ secrets.CI_TOKEN}}@github.com" > ~/.git-credentials
+          
+          toml set Cargo.toml workspace.dependencies.aptos-protos.rev ${{ github.event.inputs.commit_hash }} > Cargo.tmp && mv Cargo.tmp Cargo.toml
+
+          git add Cargo.toml
+          git commit -m "Update aptos-protos to ${{ github.event.inputs.commit_hash }}"
+          gh auth login --with-token ${{ secrets.CI_TOKEN }}
+          git push origin ${{ github.event.inputs.branch_name }}-update-dependency
+          gh pr create --title "Update aptos-protos to ${{ github.event.inputs.commit_hash }}" --body "Update aptos-protos to ${{ github.event.inputs.commit_hash }}" --base main --head ${{ github.event.inputs.branch_name }}-update-dependency
+        working-directory: aptos-indexer-processors-sdk/
